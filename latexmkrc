@@ -1,78 +1,15 @@
 # Default list of files to be proccessed.
 @default_files = ('source.tex');
+
 # Use lualatex
 $pdflatex = 'lualatex --shell-escape --synctex=1 %O %S';
+
 # Always create PDFs
 $pdf_mode = 1;
-# Try 5 times at maximum then give up
+
+# Try 7 times at maximum then give up
 $max_repeat = 5;
-# Use Skim.app to preview generated PDFs
-$pdf_previewer = 'open -a Preview';
-# File extensions to remove when cleaning
-$clean_ext = 'bbl fdb_latexmk fls nav pdfsync pyg pytxcode run.xml ' .
-             'snm synctex.gz thm upa vrb _minted-%R pythontex-files-%R ' .
-             '**/*-eps-converted-to.pdf';
 
-# Glossaries support
-add_cus_dep('glo', 'gls', 0, 'run_makeglossaries');
-add_cus_dep('acn', 'acr', 0, 'run_makeglossaries');
-sub run_makeglossaries {
-  if ( $silent ) {
-    system "makeglossaries -q '$_[0]'";
-  }
-  else {
-    system "makeglossaries '$_[0]'";
-  };
-}
-push @generated_exts, 'glo', 'gls', 'glg';
-push @generated_exts, 'acn', 'acr', 'alg';
-$clean_ext .= ' %R.ist %R.xdy';
+# Use Preview.app to preview generated PDFs
+$pdf_previewer = 'open -a Skim';
 
-# PythonTeX support
-add_cus_dep('pytxcode', 'tex', 0, 'pythontex');
-sub pythontex { return system("pythontex", $_[0]); }
-# R (knitr) support
-if(grep(/\.(rnw|rtex)$/i, @ARGV)) {
-    $pdflatex = 'internal knitrlatex ' . $pdflatex;
-    my $knitr_compiled = {};
-    sub knitrlatex {
-        for (@_) {
-            next unless -e $_;
-            my $input = $_;
-            next unless $_ =~ s/\.(rnw|rtex)$/.tex/i;
-            my $tex = $_;
-            my $checksum = (fdb_get($input))[-1];
-            if (!$knitr_compiled{$input} || $knitr_compiled{$input} ne $checksum) {
-                my $ret = system("Rscript", "-e", "knitr::knit('$input')");
-                if($ret) { return $ret; }
-                rdb_ensure_file($rule, $tex);
-                $knitr_compiled{$input} = $checksum;
-            }
-        }
-        return system(@_);
-    }
-    $clean_ext .= ' %R.tex';
-}
-
-no warnings 'redefine';
-
-# Overwrite `unlink_or_move` to support clean directory.
-use File::Path 'rmtree';
-sub unlink_or_move {
-    if ( $del_dir eq '' ) {
-        foreach (@_) {
-            if (-d $_) {
-                rmtree $_;
-            } else {
-                unlink $_;
-            }
-        }
-    }
-    else {
-        foreach (@_) {
-            if (-e $_ && ! rename $_, "$del_dir/$_" ) {
-                warn "$My_name:Cannot move '$_' to '$del_dir/$_'\n";
-            }
-        }
-    }
-}
