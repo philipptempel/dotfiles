@@ -1,0 +1,13 @@
+[user]
+    name = Philipp Tempel
+    email = git@philipptempel.me
+[credential]
+    helper = osxkeychain
+[core]
+    excludesfile = {{ HOME }}.gitignore_global
+    autocrlf = input
+[filter "lfs"]
+    process = git-lfs filter-process
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
