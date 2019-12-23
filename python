@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# where to create the virtual envs in
+export WORKON_HOME=${HOME}~/.virtualenvs
+mkdir -p $WORKON_HOME
+
+virtualenv --always-copy --python=python2.7 "$HOME/python2.7"
+workon python2.7
+pip install --ugprade pip
+deactivate
+
+virtualenv --always-copy --python=python3.7 "$HOME/python3.7"
+workon python3.7
+pip install --ugprade pip
+pip install tox wheels cookiecutter bump2version
+deactivate
+
+virtualenv --always-copy --python=python3.7 "$HOME/scientific"
+workon scientific
+pip install --ugprade pip
+pip install numpy scipy pandas matplotlib plotly sympy
+deactivate
+
+virtualenv --always-copy --python=python3.7 "$HOME/latex"
+workon latex
+pip install --ugprade pip
+pip install pygments
+deactivate
