@@ -1,9 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
-export PATH="$HOME/bin:$HOME/Library/Python/3.7/bin:/usr/local/texlive/2018/bin/x86_64-darwin/:/opt/local/bin:/opt/local/sbin:$PATH"
+export PATH="$HOME/bin:/usr/local/texlive/2019/bin/x86_64-darwin/:/opt/local/bin:/opt/local/sbin:$PATH"
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/philipptempel/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
@@ -68,11 +68,8 @@ plugins=(
   git-flow
   gitignore
   cp
-  docker
-  docker-compose
   extract
   history
-  kubectl
   macports
   osx
   pip
@@ -86,36 +83,25 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-# export MANPATH="/usr/local/man:$MANPATH"
+export MANPATH=“/usr/local/texlive/2019/texmf-dist/doc/man:$MANPATH”
+export INFOPATH=“/usr/local/texlive/2019/texmf-dist/doc/info:$INFOPATH”
+export PATH=“/usr/local/texlive/2019/bin/x86_64-darwin:$PATH”
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+if [[ -n $SSH_CONNECTION ]]; then
+  export EDITOR='vim'
+else
+  export EDITOR='mvim'
+fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
 # ssh
 # export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
-# For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 export PAGER="most"
 export GPG_TTY=$(tty)
@@ -124,8 +110,10 @@ export VIRTUALENVWRAPPER_PYTHON='/opt/local/bin/python3.7'
 export VIRTUALENVWRAPPER_VIRTUALENV='/opt/local/bin/virtualenv-3.7'
 export VIRTUALENVWRAPPER_VIRTUALENV_CLONE='/opt/local/bin/virtualenv-clone-3.7'
 export WORKON_HOME="$HOME/.virtualenvs/"
+
 source /opt/local/bin/virtualenvwrapper.sh-3.7
-workon python3
+workon python37
+
 # remove alias from `pip`
 unalias pip
 
