@@ -7,7 +7,7 @@ sudo -v
 while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 
 # basic necessities
-sudo port install zsh \
+sudo port -N install zsh \
     +mp_completion \
     curl \
     curl-ca-bundle \
@@ -26,34 +26,34 @@ sudo port install zsh \
     bash-completion 
 
 # some programming languages
-sudo port install go
-sudo port install perl
-sudo port install qt5
+sudo port -N install go
+sudo port -N install perl
+sudo port -N install qt5
 
 # additional stuff
-sudo port install vtk5
-sudo port install tcl
-sudo port install tk
+sudo port -N install vtk5
+sudo port -N install tcl
+sudo port -N install tk
 
 # python
-sudo port install python27 \
+sudo port -N install python27 \
     py27-virtualenv \
     py27-virtualenvwrapper \
     py27-pip \
     python2_select
-sudo port install python37 \
+sudo port -N install python37 \
     py37-virtualenv \
     py37-virtualenvwrapper \
     py37-pip \
     python3_select
-sudo port install py37-pygments \
+sudo port -N install py37-pygments \
     py37-tox \
     py37-wheel \
     py37-setuptools \
     py37-click \
     py37-flake8 \
     py37-virtualenvwrapper
-sudo port install pip_select
+sudo port -N install pip_select
 
 # setting defaults
 sudo port select --set python python37
