@@ -83,10 +83,6 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export MANPATH=“/usr/local/texlive/2019/texmf-dist/doc/man:$MANPATH”
-export INFOPATH=“/usr/local/texlive/2019/texmf-dist/doc/info:$INFOPATH”
-export PATH=“/usr/local/texlive/2019/bin/x86_64-darwin:$PATH”
-
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
@@ -97,23 +93,8 @@ else
   export EDITOR='mvim'
 fi
 
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
-# ssh
-# export SSH_KEY_PATH="~/.ssh/rsa_id"
-
-export PAGER="most"
-export GPG_TTY=$(tty)
-
-export VIRTUALENVWRAPPER_PYTHON='/opt/local/bin/python3.7'
-export VIRTUALENVWRAPPER_VIRTUALENV='/opt/local/bin/virtualenv-3.7'
-export VIRTUALENVWRAPPER_VIRTUALENV_CLONE='/opt/local/bin/virtualenv-clone-3.7'
-export WORKON_HOME="$HOME/.virtualenvs/"
-
 source /opt/local/bin/virtualenvwrapper.sh-3.7
-workon python37
+workon python3.7
 
 # remove alias from `pip`
 unalias pip
-
