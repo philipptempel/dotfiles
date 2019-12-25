@@ -255,8 +255,8 @@ defaults write com.apple.finder ShowStatusBar -bool true
 # Finder: don't show path bar
 defaults write com.apple.finder ShowPathbar -bool false
 
-# Display full POSIX path as Finder window title
-defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
+# Don't display full POSIX path as Finder window title
+defaults write com.apple.finder _FXShowPosixPathInTitle -bool false
 
 # Keep folders on top when sorting by name
 defaults write com.apple.finder _FXSortFoldersFirst -bool true
