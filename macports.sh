@@ -30,7 +30,7 @@ sudo port -N install gcc9 \
 
 # some programming languages
 sudo port -N install go
-sudo port -N install perl
+sudo port -N install perl5
 sudo port -N install qt5
 
 # additional stuff
