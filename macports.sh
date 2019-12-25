@@ -18,12 +18,15 @@ sudo port -N install zsh \
     gnupg2 \
     gnuplot \
     gnutls \
-    cctools \
-    gcc10 \
     git \
     curl \
     wget \
-    bash-completion 
+    bash-completion  \
+        zsh-completions
+
+# for code compilation
+sudo port -N install gcc9 \
+    cctools
 
 # some programming languages
 sudo port -N install go
@@ -31,7 +34,7 @@ sudo port -N install perl
 sudo port -N install qt5
 
 # additional stuff
-sudo port -N install vtk5
+sudo port -N install vtk
 sudo port -N install tcl
 sudo port -N install tk
 
