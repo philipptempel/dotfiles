@@ -1,0 +1,13 @@
+# files
+bash_profile
+bashrc
+editorconfig
+gitconfig
+gitignore_global
+inputrc
+latexmkrc
+vimrc
+zshrc
+# directories
+vim
+oh-my-zsh/custom
