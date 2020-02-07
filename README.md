@@ -7,7 +7,8 @@ My personal .files
 To install, simply clone the repository and run
 
 ```shell
-setup.py pull
+sync.py push
 ```
 
 ideally in a Python3.8 shell from the root directory.
+
