@@ -30,6 +30,28 @@ function d2u() {
   find ${CWD} -type f -not \( -path "*/worktree/*" -or -path "*/.git/*" -or -path "*/_minted-*" \) -exec grep -I -q . {} \; -print | xargs dos2unix
 }
 
+# update all outdated pip packages
+function pip_upgrade_outdated() {
+  pip list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U
+}
+
+# update all virtual environemnts
+function workon_upgrade_pip() {
+  # get currently active venv so we can switch back to it
+  [[ -n "${VIRTUAL_ENV// }" ]] && ACTIVE_ENV=$(basename "${VIRTUAL_ENV}") || ACTIVE_ENV=''
+  # loop over all available virtual envs
+  for ENV in $(workon)
+  do
+      workon ${ENV}
+      pip install --upgrade pip
+      pip_upgrade_outdated
+      deactivate
+  done
+
+  # re-active previously active venv
+  [[ -n "$ACTIVE_ENV" ]] && workon $ACTIVE_ENV
+}
+
 # Merge current branch into the specified other branch in a worktree
 function gmbw() {
   CWD=$(pwd)
