@@ -131,10 +131,14 @@ class DotFilesSyncer(object):
                 # if source is a directory, we need to copy it slightly
                 # differently
                 if src.is_dir():
+                    # first, clear the old directory
+                    shutil.rmtree(dest)
+                    # then copy files over
                     if IS_PYTHON_38:
                         shutil.copytree(src, dest, symlinks=True,
                                         dirs_exist_ok=True)
                     else:
+                        # and copy over
                         shutil.copytree(src, dest, symlinks=True)
                 else:
                     shutil.copyfile(src, dest, follow_symlinks=True)
