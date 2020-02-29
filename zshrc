@@ -97,3 +97,6 @@ workon python3.7
 # remove alias from `pip`
 unalias pip
 
+autoload -Uz compinit
+compinit
+
