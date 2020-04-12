@@ -2,11 +2,11 @@
 
 import argparse
 import filecmp
+import logging
 import pathlib as pl
 import re
 import shutil
 import sys
-import warnings
 
 # some needed directories as path objects
 DOTFILESDIR = pl.Path(__file__).parent.resolve()
@@ -18,6 +18,9 @@ IS_PYTHON_38 = sys.version_info[1] >= 8
 class DotFilesSyncer(object):
 
     def __init__(self):
+        self.logger = logging.getLogger(__file__)
+        self.logger.setLevel(logging.INFO)
+
         parser = argparse.ArgumentParser(
                 description='Sync tool to push and pull dotfiles',
         )
@@ -57,6 +60,18 @@ class DotFilesSyncer(object):
         return options.func(options)
 
     def push(self, options):
+        """
+        Push local files to the home directory. This basically publishes the
+        files
+
+        Parameters
+        ----------
+        options
+
+        Returns
+        -------
+
+        """
         # first, find all files and directories that could should published
         publishable = self._find_publishable()
 
@@ -76,6 +91,9 @@ class DotFilesSyncer(object):
                     and not filecmp.cmp(src, dest):
                 # don't bother any more if user asked to skip existing files
                 if options.skip_existing:
+                    self.logger.info(
+                            f'Skipping .file `{line}` because the destination '
+                            f'exists.')
                     continue
 
                 # no skipping of existing files, so let's see if they should
@@ -91,34 +109,56 @@ class DotFilesSyncer(object):
             # check if source is directory
             try:
                 if src.is_dir():
-                    shutil.copytree(src, dest, symlinks=True,
-                                    dirs_exist_ok=True)
+                    # first, clear the local directory
+                    shutil.rmtree(dest)
+                    self.logger.debug(f'Cleared directory {dest}.')
+                    # then copy files over
+                    if IS_PYTHON_38:
+                        shutil.copytree(str(src), str(dest), symlinks=True,
+                                        dirs_exist_ok=True)
+                    else:
+                        # and copy over
+                        shutil.copytree(str(src), str(dest), symlinks=True)
+                    self.logger.info(f'Published .files for `{line}` in.')
                 else:
-                    shutil.copyfile(src, dest, follow_symlinks=True)
+                    shutil.copyfile(str(src), str(dest), follow_symlinks=True)
+
+                self.logger.info(f'Published .files for `{line}`.')
             except Exception as e:
-                warnings.warn(e, RuntimeWarning)
+                self.logger.warning(f'Error publishing .file {line}.', exc_info=e)
 
     def pull(self, options):
+        """
+        Pull files from ${HOME} into this directory to update with local changes
+
+        Parameters
+        ----------
+        options
+
+        Returns
+        -------
+
+        """
         # first, find all files and directories that could should published
         publishable = self._find_publishable()
 
-        # loop over each file and publish it to $HOME/.path
+        # loop over each file and publish it to here
         for line in publishable:
             # source path
             src = HOMEDIR / f'.{line}'
             # build new file path
-            dest = DOTFILESDIR \
-                   / f'{line}'
+            dest = DOTFILESDIR / f'{line}'
 
             # file statistics
             src_stat = src.stat()
             dest_stat = dest.stat()
 
-            # check if target is newer than sourrce
+            # check if target is newer than source
             if dest_stat.st_mtime > src_stat.st_mtime \
                     and not filecmp.cmp(src, dest):
+                self.logger.info(f'Pulling in .file `{line}`.')
                 # no skipping of existing files, so let's see if they should
-                # be overriden
+                # be overridden
                 if not options.force:
                     raise FileExistsError(
                             f'Target {dest!s} exists with a newer '
@@ -133,17 +173,19 @@ class DotFilesSyncer(object):
                 if src.is_dir():
                     # first, clear the old directory
                     shutil.rmtree(dest)
+                    self.logger.debug(f'Cleared directory {dest}.')
                     # then copy files over
                     if IS_PYTHON_38:
-                        shutil.copytree(src, dest, symlinks=True,
+                        shutil.copytree(str(src), dest, symlinks=True,
                                         dirs_exist_ok=True)
                     else:
                         # and copy over
-                        shutil.copytree(src, dest, symlinks=True)
+                        shutil.copytree(str(src), str(dest), symlinks=True)
+                    self.logger.info(f'Pulled .files for `{line}` in.')
                 else:
-                    shutil.copyfile(src, dest, follow_symlinks=True)
+                    shutil.copyfile(str(src), dest, follow_symlinks=True)
             except Exception as e:
-                warnings.warn(e, RuntimeWarning)
+                self.logger.warning(f'Failure pulling in .file {line}.', exc_info=e)
 
     def _find_publishable(self):
         # load the ".dotpublish" file
@@ -157,5 +199,4 @@ class DotFilesSyncer(object):
 
 
 if __name__ == '__main__':
-    syncer = DotFilesSyncer()
-    syncer.go(sys.argv[1:])
+    DotFilesSyncer().go(sys.argv[1:])
