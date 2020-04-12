@@ -66,6 +66,8 @@ plugins=(
   git-flow
   gitignore
   cp
+  docker
+  docker-compose
   extract
   history
   macports
