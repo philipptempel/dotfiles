@@ -84,42 +84,47 @@ class DotFilesSyncer(object):
 
             # file statistics
             src_stat = src.stat()
-            dest_stat = dest.stat()
 
-            # check if target is newer than sourrce
-            if dest_stat.st_mtime > src_stat.st_mtime \
+            try:
+                dest_stat = dest.stat()
+
+                if dest_stat.st_mtime > src_stat.st_mtime \
                     and not filecmp.cmp(src, dest):
-                # don't bother any more if user asked to skip existing files
-                if options.skip_existing:
-                    self.logger.info(
+                    # don't bother any more if user asked to skip existing files
+                    if options.skip_existing:
+                        self.logger.info(
                             f'Skipping .file `{line}` because the destination '
                             f'exists.')
-                    continue
+                        continue
 
-                # no skipping of existing files, so let's see if they should
-                # be overriden
-                if not options.force:
-                    raise FileExistsError(
-                            f'Target {dest!s} exists with a newer '
-                            f'last-modified time stamp than the source. If '
-                            f'you want to force override, provide the '
-                            f'`--force` option. If you don\'t want it '
-                            f'overriden, provide the --skip-newer` option.')
+                    # no skipping of existing files, so let's see if they should
+                    # be overriden
+                    if not options.force:
+                        raise FileExistsError(
+                                f'Target {dest!s} exists with a newer '
+                                f'last-modified time stamp than the source. If '
+                                f'you want to force override, provide the '
+                                f'`--force` option. If you don\'t want it '
+                                f'overriden, provide the --skip-newer` option.')
+            except FileNotFoundError:
+                pass
+            except FileExistsError as e:
+                raise e
 
             # check if source is directory
             try:
                 if src.is_dir():
-                    # first, clear the local directory
-                    shutil.rmtree(dest)
-                    self.logger.debug(f'Cleared directory {dest}.')
-                    # then copy files over
+                    # first, clear the old directory
+                    if dest.exists():
+                        shutil.rmtree(dest)
+                        self.logger.debug(f'Cleared directory {dest}.')
+                    # then fopy files over
                     if IS_PYTHON_38:
-                        shutil.copytree(str(src), str(dest), symlinks=True,
+                        shutil.copytree(src, dest, symlinks=True,
                                         dirs_exist_ok=True)
                     else:
-                        # and copy over
-                        shutil.copytree(str(src), str(dest), symlinks=True)
-                    self.logger.info(f'Published .files for `{line}` in.')
+                        shutil.copytree(src, dest, symlinks=True)
+                    self.logger.info(f'Published .files for `{line}`.')
                 else:
                     shutil.copyfile(str(src), str(dest), follow_symlinks=True)
 
@@ -200,3 +205,4 @@ class DotFilesSyncer(object):
 
 if __name__ == '__main__':
     DotFilesSyncer().go(sys.argv[1:])
+
